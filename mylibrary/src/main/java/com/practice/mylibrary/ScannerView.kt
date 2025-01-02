@@ -5,16 +5,22 @@ import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Gravity
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import com.practice.mylibrary.models.ScannerConfig
 
 
@@ -71,21 +77,81 @@ class ScannerView @JvmOverloads constructor(
         }
         addView(guideTextView)
 
-        //Powered text
-        poweredTextView = TextView(context).apply {
+        bottomSheetLayout = LinearLayout(context).apply {
             layoutParams = LayoutParams(
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT
+                LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-                bottomMargin = 50
+                gravity = Gravity.BOTTOM
+            }
+            orientation = LinearLayout.VERTICAL
+            elevation = context.resources.getDimension(R.dimen.bottom_sheet_elevation)
+            background = createBottomSheetBackground()
+        }
+
+        val contentLayout = LinearLayout(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.CENTER
+                // Add padding to the content
+                val horizontalPadding = context.resources.getDimensionPixelSize(R.dimen.padding_horizontal)
+                val verticalPadding = context.resources.getDimensionPixelSize(R.dimen.padding_vertical)
+                setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
+            }
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+        }
+
+        companyLogoView = ImageView(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                context.resources.getDimensionPixelSize(R.dimen.logo_size),
+                context.resources.getDimensionPixelSize(R.dimen.logo_size)
+            ).apply {
+                marginEnd = context.resources.getDimensionPixelSize(R.dimen.margin_between_logo_text)
+                gravity = Gravity.CENTER_VERTICAL
+            }
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            setImageResource(R.drawable.positra_rx_logo)
+        }
+
+        poweredTextView = TextView(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.CENTER_VERTICAL
             }
             text = context.getString(R.string.poweredby)
             textSize = 15f
             setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray))
-            setShadowLayer(3f, 1f, 1f, ContextCompat.getColor(context, android.R.color.black))
+            includeFontPadding = false
+            gravity = Gravity.CENTER
         }
-        addView(poweredTextView)
+
+
+        contentLayout.addView(poweredTextView)
+        contentLayout.addView(companyLogoView)
+        bottomSheetLayout.addView(contentLayout)
+        addView(bottomSheetLayout)
+
+
+        //Powered text
+//        poweredTextView = TextView(context).apply {
+//            layoutParams = LayoutParams(
+//                LayoutParams.WRAP_CONTENT,
+//                LayoutParams.WRAP_CONTENT
+//            ).apply {
+//                gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+//                bottomMargin = 50
+//            }
+//            text = context.getString(R.string.poweredby)
+//            textSize = 15f
+//            setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray))
+//            setShadowLayer(3f, 1f, 1f, ContextCompat.getColor(context, android.R.color.black))
+//        }
+//        addView(poweredTextView)
 
         val galleryButton = ImageView(context).apply {
             layoutParams = LayoutParams(
@@ -130,7 +196,7 @@ class ScannerView @JvmOverloads constructor(
                 topMargin = 50
                 marginEnd = 150
             }
-            setImageResource(R.drawable.baseline_flashlight_on_24)
+            setImageResource(R.drawable.baseline_flashlight_24)
             setColorFilter(ContextCompat.getColor(context, android.R.color.white))
             setOnClickListener {
                 toggleFlash()
@@ -148,6 +214,10 @@ class ScannerView @JvmOverloads constructor(
 
     fun setPoweredByText(text: String) {
         poweredTextView.text = text
+    }
+
+    fun setCompanyLogo(@DrawableRes logoResId: Int) {
+        companyLogoView.setImageResource(logoResId)
     }
 
     fun startScanning(callback: ScannerCallback, config: ScannerConfig = ScannerConfig()) {
@@ -186,6 +256,25 @@ class ScannerView @JvmOverloads constructor(
 
     fun cleanup() {
         feedbackUtil.release()
+    }
+
+    private fun createBottomSheetBackground(): Drawable {
+        // Create a shape drawable for the bottom sheet
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            // Set corner radius only for top corners
+            cornerRadii = floatArrayOf(
+                16f, 16f, // top-left
+                16f, 16f, // top-right
+                0f, 0f,   // bottom-right
+                0f, 0f    // bottom-left
+            )
+            // Set background color based on theme
+            val typedValue = TypedValue()
+            context.theme.resolveAttribute(android.R.attr.colorBackground, typedValue, true)
+            val backgroundColor = typedValue.data
+            setColor(ColorUtils.setAlphaComponent(backgroundColor, 240))
+        }
     }
 
     private class ScannerOverlay(context: Context) : androidx.appcompat.widget.AppCompatImageView(context) {

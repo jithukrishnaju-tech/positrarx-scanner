@@ -1,6 +1,8 @@
 package com.practice.mylibrary.models
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import com.practice.mylibrary.models.ScannerConfigBuilder.Companion.EXTRA_COMPANY_LOGO
 import com.practice.mylibrary.models.ScannerConfigBuilder.Companion.EXTRA_ENABLED_FORMATS
 import com.practice.mylibrary.models.ScannerConfigBuilder.Companion.EXTRA_ENABLE_BEEP
 import com.practice.mylibrary.models.ScannerConfigBuilder.Companion.EXTRA_GUIDE_TEXT
@@ -10,6 +12,7 @@ import com.practice.mylibrary.models.ScannerConfigBuilder.Companion.EXTRA_POWERE
 data class ScannerConfig(
     val poweredByText: String? = null,
     val guideText: String? = null,
+    val companyLogoResId: Int? = null,
     val enabledFormats: List<BarcodeFormat> = listOf(),
     val enableBeepSound: Boolean = true,
     val lockOrientation: Boolean = false
@@ -19,6 +22,7 @@ data class ScannerConfig(
             return bundle?.let {
                 ScannerConfig(
                     poweredByText = it.getString(EXTRA_POWERED_BY_TEXT),
+                    companyLogoResId = if (it.containsKey(EXTRA_COMPANY_LOGO)) it.getInt(EXTRA_COMPANY_LOGO) else null,
                     guideText = it.getString(EXTRA_GUIDE_TEXT),
                     enabledFormats = it.getSerializable(EXTRA_ENABLED_FORMATS) as? List<BarcodeFormat> ?: listOf(),
                     enableBeepSound = it.getBoolean(EXTRA_ENABLE_BEEP, true),
