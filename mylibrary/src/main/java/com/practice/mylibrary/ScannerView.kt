@@ -10,6 +10,7 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
@@ -30,6 +31,9 @@ class ScannerView @JvmOverloads constructor(
     private val closeButton: ImageView
     private val scannerManager: ScannerManager
     private val feedbackUtil: FeedbackUtil
+    private lateinit var bottomSheetLayout: LinearLayout
+    private lateinit var poweredTextView: TextView
+    private lateinit var companyLogoView: ImageView
 
     private var isFlashOn = false
 
@@ -68,7 +72,7 @@ class ScannerView @JvmOverloads constructor(
         addView(guideTextView)
 
         //Powered text
-        val poweredView = TextView(context).apply {
+        poweredTextView = TextView(context).apply {
             layoutParams = LayoutParams(
                 LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT
@@ -81,7 +85,7 @@ class ScannerView @JvmOverloads constructor(
             setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray))
             setShadowLayer(3f, 1f, 1f, ContextCompat.getColor(context, android.R.color.black))
         }
-        addView(poweredView)
+        addView(poweredTextView)
 
         val galleryButton = ImageView(context).apply {
             layoutParams = LayoutParams(
@@ -142,8 +146,13 @@ class ScannerView @JvmOverloads constructor(
         guideTextView.text = text
     }
 
+    fun setPoweredByText(text: String) {
+        poweredTextView.text = text
+    }
+
     fun startScanning(callback: ScannerCallback, config: ScannerConfig = ScannerConfig()) {
         scannerManager.startScanning(callback, config)
+        feedbackUtil.setBeepEnabled(config.enableBeepSound)
     }
 
     fun stopScanning() {

@@ -2,19 +2,21 @@ package com.practice.mylibrary
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.practice.mylibrary.databinding.ActivityScannerBinding
 import com.practice.mylibrary.models.ScanResult
+import com.practice.mylibrary.models.ScannerConfig
 import com.practice.mylibrary.models.ScannerError
 
 
 class ScannerActivity : AppCompatActivity() {
     private lateinit var scannerView: ScannerView
     private lateinit var resultTextView: TextView
-//    private lateinit var binding: ActivityScannerBinding
+    private lateinit var config: ScannerConfig
 
     private val scannerCallback = object : ScannerCallback {
         override fun onCodeScanned(result: ScanResult) {
@@ -34,16 +36,21 @@ class ScannerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        config = ScannerConfig.fromBundle(intent.extras)
+        if (config.lockOrientation) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
 //        binding = ActivityScannerBinding.inflate(layoutInflater)
 //        setContentView(binding.root)
         setContentView(R.layout.activity_scanner)
         scannerView = findViewById(R.id.scanner_view)
         resultTextView = findViewById(R.id.resultTextView)
+        config.guideText?.let { scannerView.setGuideText(it) }
+        config.poweredByText?.let { scannerView.setPoweredByText(it) }
         initializeScanner()
     }
     private fun initializeScanner() {
-        scannerView.startScanning(scannerCallback)
+        scannerView.startScanning(scannerCallback, config)
     }
 
     private fun handleScanResult(result: ScanResult) {

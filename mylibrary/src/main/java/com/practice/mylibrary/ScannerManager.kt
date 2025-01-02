@@ -129,9 +129,9 @@ internal class ScannerManager(
                 imageAnalysis
             )
 
-            if (config.autoFocusEnabled) {
+//            if (config.autoFocusEnabled) {
                 camera?.cameraControl?.enableTorch(false)
-            }
+//            }
 
         } catch (e: Exception) {
             callback?.onError(ScannerError.CameraInitializationError)

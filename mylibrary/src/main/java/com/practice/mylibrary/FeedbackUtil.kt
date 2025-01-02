@@ -6,11 +6,16 @@ import android.media.MediaPlayer
 
 class FeedbackUtil(private val context: Context) {
     private var mediaPlayer: MediaPlayer? = null
+    private var beepEnabled = true
     init {
         initializeBeepSound()
     }
+    fun setBeepEnabled(enabled: Boolean) {
+        beepEnabled = enabled
+    }
 
     private fun initializeBeepSound() {
+        if (!beepEnabled) return
         try {
             mediaPlayer = MediaPlayer.create(context, R.raw.notification_sound).apply {
                 setAudioAttributes(
@@ -26,6 +31,7 @@ class FeedbackUtil(private val context: Context) {
     }
 
     fun playBeepSound() {
+        if (!beepEnabled) return
         mediaPlayer?.let { player ->
             if (!player.isPlaying) {
                 player.start()
