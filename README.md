@@ -7,7 +7,6 @@ A lightweight Android library for QR code and barcode scanning built using ML Ki
 - Simple integration with just a few lines of code
 - Supports both QR codes and barcodes
 - Customizable scanner UI and behavior
-- Configurable company logo
 - Configurable orientation lock and sound options
 
 ## Installation
@@ -23,7 +22,7 @@ allprojects {
 Add the dependency to your app's build.gradle file:
 ```gradle
 dependencies {
-    implementation 'com.github.jithukrishnaju-tech:positrarx-scanner:1.0.0'
+    implementation 'com.github.jithukrishnaju-tech:positrarx-scanner:1.0.1'
 }
 ```
 
@@ -44,7 +43,7 @@ The library provides a `ScannerConfigBuilder` class to customize the scanner beh
 val scannerConfig = ScannerConfigBuilder()
     .setPoweredByText("Powered by ")           // Set custom powered by text
     .setGuideText("Scan QR/Barcode")          // Set custom guide text
-    .setCompanyLogo(com.practice.mylibrary.R.drawable.positra_rx_logo) // Set company logo
+    .setCompanyLogo(R.drawable.logo.xml) // Set company logo
     .setBeepSound(false)                      // Enable/disable beep sound on scan
     .setOrientationLock(true)                 // Lock screen orientation during scanning
     .build()
@@ -71,7 +70,6 @@ private fun startScannerActivity() {
     val scannerConfig = ScannerConfigBuilder()
         .setPoweredByText("Powered by ")
         .setGuideText("Scan QR/Barcode")
-        .setCompanyLogo(com.practice.mylibrary.R.drawable.positra_rx_logo)
         .setBeepSound(false)
         .setOrientationLock(true)
         .build()
@@ -108,7 +106,7 @@ class ScannerFragment : Fragment() {
         val scannerConfig = ScannerConfigBuilder()
             .setPoweredByText("Powered by ")
             .setGuideText("Scan QR/Barcode")
-            .setCompanyLogo(com.practice.mylibrary.R.drawable.positra_rx_logo)
+            .setCompanyLogo(R.drawable.logo.xml)
             .setBeepSound(false)
             .setOrientationLock(true)
             .build()
