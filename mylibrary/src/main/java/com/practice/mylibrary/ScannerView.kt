@@ -196,7 +196,7 @@ class ScannerView @JvmOverloads constructor(
                 topMargin = 50
                 marginEnd = 150
             }
-            setImageResource(R.drawable.baseline_flashlight_24)
+            setImageResource(R.drawable.baseline_flashlight_on_24)
             setColorFilter(ContextCompat.getColor(context, android.R.color.white))
             setOnClickListener {
                 toggleFlash()
